@@ -1,4 +1,4 @@
-package in.sdqali.spring;
+package in.sdqali.spring.csrf;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
