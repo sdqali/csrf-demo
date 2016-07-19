@@ -1,4 +1,4 @@
-package in.sdqali.spring.csrf;
+package in.sdqali.spring.csrf.config;
 
 import in.sdqali.spring.csrf.auth.filter.CsrfGrantingFilter;
 import in.sdqali.spring.csrf.auth.matcher.NoAntPathRequestMatcher;
