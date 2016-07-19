@@ -1,6 +1,7 @@
 package in.sdqali.spring.csrf;
 
 import in.sdqali.spring.csrf.auth.filter.CsrfGrantingFilter;
+import in.sdqali.spring.csrf.auth.matcher.NoAntPathRequestMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,17 +23,34 @@ import org.springframework.session.web.http.HeaderHttpSessionStrategy;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
+    String[] patterns = new String[] {
+        "/login",
+        "/bower_components/**/*",
+        "/app/**/*",
+        "/index.html",
+        "/home.html",
+        "/signin.html",
+        "/favicon.ico"
+    };
+
     http
         .authorizeRequests()
-        .antMatchers("/hello/**").hasRole("USER")
+        .antMatchers(patterns)
+        .permitAll()
+        .antMatchers("/hello/**")
+        .hasRole("USER")
         .and()
         .csrf()
         .csrfTokenRepository(csrfTokenRepository())
-        .requireCsrfProtectionMatcher(request -> !request.getRequestURI().equals("/login"))
+        .requireCsrfProtectionMatcher(csrfProtectionMatcher(patterns))
         .and()
         .httpBasic()
         .and()
         .addFilterAfter(new CsrfGrantingFilter(), SessionManagementFilter.class);
+  }
+
+  private NoAntPathRequestMatcher csrfProtectionMatcher(String[] patterns) {
+    return new NoAntPathRequestMatcher(patterns);
   }
 
   private CsrfTokenRepository csrfTokenRepository() {
