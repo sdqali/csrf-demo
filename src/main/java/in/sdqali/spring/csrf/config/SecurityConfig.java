@@ -17,6 +17,8 @@ import org.springframework.session.SessionRepository;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
 import org.springframework.session.web.http.HeaderHttpSessionStrategy;
 
+import static in.sdqali.spring.csrf.auth.filter.CsrfGrantingFilter.X_XSRF_TOKEN;
+
 @EnableWebSecurity
 @Configuration
 @EnableSpringHttpSession
@@ -24,6 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     String[] patterns = new String[] {
+        "/",
         "/login",
         "/bower_components/**/*",
         "/app/**/*",
@@ -54,7 +57,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   private CsrfTokenRepository csrfTokenRepository() {
-    return new HttpSessionCsrfTokenRepository();
+    HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
+    repository.setHeaderName(X_XSRF_TOKEN);
+    return repository;
   }
 
   @Autowired

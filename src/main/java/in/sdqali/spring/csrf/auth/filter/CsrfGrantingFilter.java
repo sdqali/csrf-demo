@@ -8,6 +8,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -15,7 +16,7 @@ import java.io.IOException;
 
 public class CsrfGrantingFilter implements Filter {
 
-  public static final String X_CSRF_TOKEN = "X-CSRF-TOKEN";
+  public static final String X_XSRF_TOKEN = "X-XSRF-TOKEN";
 
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
@@ -29,7 +30,9 @@ public class CsrfGrantingFilter implements Filter {
     String token = csrf.getToken();
     if (token != null && isAuthenticating(servletRequest)) {
       HttpServletResponse response = (HttpServletResponse) servletResponse;
-      response.setHeader(X_CSRF_TOKEN, token);
+      Cookie cookie = new Cookie("XSRF-TOKEN", token);
+      cookie.setPath("/");
+      response.addCookie(cookie);
     }
     filterChain.doFilter(servletRequest, servletResponse);
   }
