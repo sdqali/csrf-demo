@@ -9,13 +9,16 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
 import org.springframework.session.web.http.HeaderHttpSessionStrategy;
+
+import javax.servlet.Filter;
 
 import static in.sdqali.spring.csrf.auth.filter.CsrfGrantingFilter.X_XSRF_TOKEN;
 
@@ -44,12 +47,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .hasRole("USER")
         .and()
         .csrf()
-        .csrfTokenRepository(csrfTokenRepository())
-        .requireCsrfProtectionMatcher(csrfProtectionMatcher(patterns))
-        .and()
+        .disable()
         .httpBasic()
         .and()
-        .addFilterAfter(new CsrfGrantingFilter(), SessionManagementFilter.class);
+        .addFilterAfter(csrfFilter(patterns), FilterSecurityInterceptor.class)
+        .addFilterAfter(new CsrfGrantingFilter(), CsrfFilter.class);
+  }
+
+  private Filter csrfFilter(String[] patterns) {
+    CsrfFilter csrfFilter = new CsrfFilter(csrfTokenRepository());
+    csrfFilter.setRequireCsrfProtectionMatcher(csrfProtectionMatcher(patterns));
+    return csrfFilter;
   }
 
   private NoAntPathRequestMatcher csrfProtectionMatcher(String[] patterns) {
