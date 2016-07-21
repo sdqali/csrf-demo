@@ -25,7 +25,6 @@
       .run(function ($localStorage, $http, $location, $rootScope) {
         if ($localStorage.user) {
           $http.defaults.headers.common['x-auth-token'] = $localStorage.authToken;
-//          $http.defaults.headers.common['x-csrf-token'] = headers['x-csrf-token'];
         }
 
         $rootScope.$on('$locationChangeStart', function (event, next, current) {

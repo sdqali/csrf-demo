@@ -4,9 +4,7 @@
       new Login({username: username, password: password},
           function (data, headers) {
             $localStorage.user = data.user;
-//            $localStorage.csrfToken = headers['x-csrf-token'];
             $localStorage.authToken = headers['x-auth-token'];
-//            $http.defaults.headers.common['x-csrf-token'] = headers['x-csrf-token'];
             $http.defaults.headers.common['x-auth-token'] = headers['x-auth-token'];
             $location.path("/");
           }, function (error) {
@@ -16,7 +14,6 @@
 
     $scope.logout = function () {
       delete $localStorage.user;
-      delete $localStorage.csrfToken;
       delete $localStorage.authToken;
       $http.defaults.headers.common = {};
     }
